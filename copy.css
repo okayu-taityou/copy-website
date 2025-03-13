@@ -1,114 +1,212 @@
 body {
     background-color: #232830;
 }
-h1{
+
+h1 {
     position: absolute;
-  width: 844px;
-  height: 85px;
-  top: 200px;
-  left: 50%; 
-  transform: translateX(-50%); 
-  opacity: 1; 
-  font-family: 'Recursive', sans-serif;
-  font-size: 71px;
-  font-style: italic;
-  font-weight: 400;
-  line-height: 85.2px;
-  text-align: left;
-  text-underline-position: from-font;
-  text-decoration-skip-ink: none;
-  color: #FF7575;
-  ;
+    width: 844px;
+    height: 85px;
+    top: 200px;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 1;
+    font-family: 'Recursive', sans-serif;
+    font-size: 71px;
+    font-style: italic;
+    font-weight: 400;
+    line-height: 85.2px;
+    text-align: left;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
+    color: #FF7575;
+    white-space: nowrap;
+    ;
 }
+
 h2 {
-    position: absolute;          
-    width: auto;                 /* テキスト幅に自動調整 */
-    height: 44px;                
-    top: 320px;                  
-    left: 50%;                   
-    transform: translateX(-50%); 
-    opacity: 1;                  
-    font-family: 'Poppins', sans-serif; 
-    font-size: 29px;             
-    font-weight: 400;            
-    line-height: 44px;           
-    text-align: center;          
-    text-underline-position: from-font; 
-    text-decoration-skip-ink: none;     
-    color: #FFFFFF;              
-    white-space: nowrap;         /* テキストを1行で表示 */
+    position: absolute;
+    width: auto;
+    height: 44px;
+    top: 320px;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 1;
+    font-family: 'Poppins', sans-serif;
+    font-size: 29px;
+    font-weight: 400;
+    line-height: 44px;
+    text-align: center;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
+    color: #FFFFFF;
+    white-space: nowrap;
 }
-.left-top{
+
+.left-top {
     color: #FFFFFF;
 }
+
 .right-top {
-    position: absolute;         
-    top: 10px;                  
-    right: 10px;               
-    display: flex;              
-    gap: 20px;                  
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 20px;
 }
 
 .right-top span {
-    font-family: 'Poppins', sans-serif; 
-    font-size: 18px;                    
-    font-weight: 400;                   
-    line-height: 36px;                  
-    color: #FFFFFF;                     
-    text-align: right;                 
+    font-family: 'Poppins', sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 36px;
+    color: #FFFFFF;
+    text-align: right;
 }
-.logo-container{
+
+.logo-container {
     margin: 0 auto;
     width: 150px;
-   /* text-aligin: center;*/
+    /* text-aligin: center;*/
 }
+
 .horizontal-line {
     position: absolute;
-    width: 100%;        
-    height: 3px;         
-    background-color: #4D4D4D; 
+    width: 100%;
+    height: 3px;
+    background-color: #4D4D4D;
     top: 390px;
 }
-.icon-container{
+
+.icon-container {
     display: flex;
     position: absolute;
-    width: 24px;               
+    width: 24px;
     height: 24px;
     top: 400px;
-    left: 100px; 
+    left: 100px;
     gap: 20px;
 }
-.grid-icon{
+
+.grid-icon {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 2px;
 }
+
 .grid-icon div {
-    width: 6px; 
-    height: 6px; 
+    width: 6px;
+    height: 6px;
     background-color: #909090;
-    display: block; 
+    display: block;
 }
-.list-icon{
+
+.list-icon {
     display: flex;
-    flex-direction: column;  
-    gap: 6px;  
+    flex-direction: column;
+    gap: 6px;
 }
+
 .list-icon .line {
-    width: 24px;          
-    height: 24px;           
+    width: 24px;
+    height: 24px;
     background-color: #909090;
 }
+
 .text-container {
     display: flex;
-    flex-direction: flex;  
-    gap: 20px;                
+    flex-direction: flex;
+    gap: 30px;
+    margin-left: 150px;
 }
 
 .text-container p {
-    margin: 0;              
+    margin: 0;
+    font-family: 'Recursive', sans-serif;
+    font-style: italic;
+    font-size: 24px;
+    color: #909090;
+}
+
+.article-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 180px;
+    padding: 20px;
+    justify-content: center;
+}
+
+.article-card {
+    background-color: #ffffff;
+    width: 100%;
+    height: 350px;
+    border-radius: 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    font-family: 'Recursive', sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: #232830;
+}
+
+.article-card img {
+    margin-top: 20px;
+    width: 85%;
+    height: auto;
+    border-radius: 22px;
+    object-fit: cover;
+    max-height: 120px;
+}
+
+.article-card p {
+    margin: 10px 0 0 0;
+    text-align: left;
+    font-family: 'Poppins', sans-serif;
+    font-size: 19px;
+}
+
+.title {
+    font-weight: bold;
+}
+
+.article-card p:last-child {
+    margin-top: auto;
+}
+
+.pagination {
+    display: grid;
+    grid-template-columns: repeat(7, auto); 
+    gap: 30px;
+    align-items: center;
+    justify-content: center;
     font-family: 'Recursive', sans-serif; 
-    font-style: italic;   
-    font-size: 24px;        
-    color: #909090;         
+    font-size: 25px; 
+    font-style: italic;
+    color: #909090;
+}
+
+
+.pagination a {
+    text-decoration: none; 
+    color: #909090; 
+    padding: 5px 10px; 
+    position: relative; 
+    transition: color 0.3s, transform 0.3s; 
+}
+
+.pagination a:hover {
+    color: #FF7575; 
+}
+
+.pagination a:hover::before {
+    content: ""; 
+    position: absolute;
+    top: 0; 
+    left: 0;
+    width: 100%;
+    height: 3px; 
+    background-color: #FF7575; 
+    transition: background-color 0.3s; 
 }
