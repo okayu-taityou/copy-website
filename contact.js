@@ -13,25 +13,32 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             console.log('📝 フォーム送信イベント発生');
             
+            // まず要素を取得
+            const nameElement = document.getElementById('name');
+            const emailElement = document.getElementById('email');
+            const subjectElement = document.getElementById('subject');
+            const messageElement = document.getElementById('message');
+            
+            console.log('� 要素取得結果:');
+            console.log('  - name element:', nameElement);
+            console.log('  - email element:', emailElement);
+            console.log('  - subject element:', subjectElement);
+            console.log('  - message element:', messageElement);
+            
             // フォームデータを取得 - 直接input要素から取得する方法に変更
             const formObj = {
-                name: document.getElementById('name').value,
-                email: document.getElementById('email').value,
-                subject: document.getElementById('subject').value,
-                message: document.getElementById('message').value
+                name: nameElement ? nameElement.value : '',
+                email: emailElement ? emailElement.value : '',
+                subject: subjectElement ? subjectElement.value : '',
+                message: messageElement ? messageElement.value : ''
             };
-            console.log('📊 フォームデータ:', formObj);
             
-            // デバッグ: 各入力フィールドの状態を確認
-            console.log('🔍 入力フィールドの状態:');
-            console.log('  - name element:', document.getElementById('name'));
-            console.log('  - name value:', document.getElementById('name')?.value);
-            console.log('  - email element:', document.getElementById('email'));
-            console.log('  - email value:', document.getElementById('email')?.value);
-            console.log('  - subject element:', document.getElementById('subject'));
-            console.log('  - subject value:', document.getElementById('subject')?.value);
-            console.log('  - message element:', document.getElementById('message'));
-            console.log('  - message value:', document.getElementById('message')?.value);
+            console.log('📊 フォームデータ:', formObj);
+            console.log('📊 各値の詳細:');
+            console.log('  - name:', `"${formObj.name}" (length: ${formObj.name.length})`);
+            console.log('  - email:', `"${formObj.email}" (length: ${formObj.email.length})`);
+            console.log('  - subject:', `"${formObj.subject}" (length: ${formObj.subject.length})`);
+            console.log('  - message:', `"${formObj.message}" (length: ${formObj.message.length})`);
             
             // バリデーション
             if (validateForm(formObj)) {
