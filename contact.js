@@ -40,6 +40,28 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         
+        // 送信ボタンのclickイベントでも値をキャプチャ
+        const submitButton = contactForm.querySelector('button[type="submit"]');
+        if (submitButton) {
+            submitButton.addEventListener('click', function(e) {
+                console.log('=== SUBMIT BUTTON CLICKED ===');
+                console.log('Button click - Values:');
+                console.log('name value:', nameInput.value);
+                console.log('email value:', emailInput.value);
+                console.log('subject value:', subjectInput.value);
+                console.log('message value:', messageInput.value);
+                
+                // 値を一時的に保存
+                window.tempFormData = {
+                    name: nameInput.value,
+                    email: emailInput.value,
+                    subject: subjectInput.value,
+                    message: messageInput.value
+                };
+                console.log('Temporarily saved form data:', window.tempFormData);
+            });
+        }
+        
         contactForm.addEventListener('submit', function(e) {
             console.log('=== FORM SUBMIT EVENT START ===');
             console.log('Event object:', e);
@@ -54,32 +76,39 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             console.log('Form submit triggered (after preventDefault)');
             
-            // preventDefault後に再度値を確認
-            console.log('AFTER preventDefault - Values:');
-            console.log('name value:', nameInput.value);
-            console.log('email value:', emailInput.value);
-            console.log('subject value:', subjectInput.value);
-            console.log('message value:', messageInput.value);
-            
-            console.log('Name input element:', nameInput);
-            console.log('Email input element:', emailInput);
-            console.log('Subject input element:', subjectInput);
-            console.log('Message input element:', messageInput);
-            
-            // フォーム全体のFormDataも確認
-            const formData = new FormData(e.target);
-            console.log('FormData entries:');
-            for (let [key, value] of formData.entries()) {
-                console.log('FormData ' + key + ': "' + value + '"');
+            // 一時保存された値を使用
+            let formObj;
+            if (window.tempFormData) {
+                console.log('Using temporarily saved data:', window.tempFormData);
+                formObj = window.tempFormData;
+            } else {
+                // preventDefault後に再度値を確認
+                console.log('AFTER preventDefault - Values:');
+                console.log('name value:', nameInput.value);
+                console.log('email value:', emailInput.value);
+                console.log('subject value:', subjectInput.value);
+                console.log('message value:', messageInput.value);
+                
+                console.log('Name input element:', nameInput);
+                console.log('Email input element:', emailInput);
+                console.log('Subject input element:', subjectInput);
+                console.log('Message input element:', messageInput);
+                
+                // フォーム全体のFormDataも確認
+                const formData = new FormData(e.target);
+                console.log('FormData entries:');
+                for (let [key, value] of formData.entries()) {
+                    console.log('FormData ' + key + ': "' + value + '"');
+                }
+                
+                // 値を直接取得（キャッシュした要素を使用）
+                formObj = {
+                    name: nameInput ? nameInput.value : '',
+                    email: emailInput ? emailInput.value : '',
+                    subject: subjectInput ? subjectInput.value : '',
+                    message: messageInput ? messageInput.value : ''
+                };
             }
-            
-            // 値を直接取得（キャッシュした要素を使用）
-            const formObj = {
-                name: nameInput ? nameInput.value : '',
-                email: emailInput ? emailInput.value : '',
-                subject: subjectInput ? subjectInput.value : '',
-                message: messageInput ? messageInput.value : ''
-            };
             
             console.log('Direct values:');
             console.log('name: "' + formObj.name + '"');
