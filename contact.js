@@ -7,19 +7,43 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (contactForm) {
         contactForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            console.log('Form submit triggered');
+            console.log('=== FORM SUBMIT EVENT START ===');
+            console.log('Event object:', e);
+            console.log('Event target:', e.target);
             
-            // 要素を直接取得してデバッグ
+            // preventDefault前に値を確認
             const nameInput = document.getElementById('name');
             const emailInput = document.getElementById('email');
             const subjectInput = document.getElementById('subject');
             const messageInput = document.getElementById('message');
             
+            console.log('BEFORE preventDefault - Values:');
+            console.log('name value:', nameInput.value);
+            console.log('email value:', emailInput.value);
+            console.log('subject value:', subjectInput.value);
+            console.log('message value:', messageInput.value);
+            
+            e.preventDefault();
+            console.log('Form submit triggered (after preventDefault)');
+            
+            // preventDefault後に再度値を確認
+            console.log('AFTER preventDefault - Values:');
+            console.log('name value:', nameInput.value);
+            console.log('email value:', emailInput.value);
+            console.log('subject value:', subjectInput.value);
+            console.log('message value:', messageInput.value);
+            
             console.log('Name input element:', nameInput);
             console.log('Email input element:', emailInput);
             console.log('Subject input element:', subjectInput);
             console.log('Message input element:', messageInput);
+            
+            // フォーム全体のFormDataも確認
+            const formData = new FormData(e.target);
+            console.log('FormData entries:');
+            for (let [key, value] of formData.entries()) {
+                console.log('FormData ' + key + ': "' + value + '"');
+            }
             
             // 値を直接取得
             const formObj = {
@@ -36,6 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('message: "' + formObj.message + '"');
             
             console.log('Form data:', formObj);
+            console.log('=== FORM SUBMIT EVENT END ===');
             
             if (validateForm(formObj)) {
                 submitToAPI(formObj);
