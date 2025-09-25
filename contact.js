@@ -36,33 +36,52 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // フォームバリデーション
     function validateForm(data) {
+        console.log('🔍 バリデーション開始');
+        console.log('📋 受信データ詳細:', JSON.stringify(data, null, 2));
         let isValid = true;
         const errors = [];
         
         // 必須項目のチェック
+        console.log('👤 お名前チェック:', data.name, '(length:', data.name?.length, ')');
         if (!data.name || data.name.trim() === '') {
+            console.log('❌ お名前エラー');
             errors.push('お名前は必須項目です。');
             isValid = false;
+        } else {
+            console.log('✅ お名前OK');
         }
         
+        console.log('📧 メールアドレスチェック:', data.email, '(length:', data.email?.length, ')');
         if (!data.email || data.email.trim() === '') {
+            console.log('❌ メールアドレス未入力エラー');
             errors.push('メールアドレスは必須項目です。');
             isValid = false;
         } else if (!isValidEmail(data.email)) {
+            console.log('❌ メールアドレス形式エラー');
             errors.push('メールアドレスの形式が正しくありません。');
             isValid = false;
+        } else {
+            console.log('✅ メールアドレスOK');
         }
         
+        console.log('💬 メッセージチェック:', data.message, '(length:', data.message?.length, ')');
         if (!data.message || data.message.trim() === '') {
+            console.log('❌ メッセージエラー');
             errors.push('メッセージは必須項目です。');
             isValid = false;
+        } else {
+            console.log('✅ メッセージOK');
         }
         
         // エラーメッセージを表示
         if (!isValid) {
+            console.log('❌ バリデーション失敗 - エラー内容:', errors);
             showErrors(errors);
+        } else {
+            console.log('✅ バリデーション全項目成功');
         }
         
+        console.log('📊 バリデーション結果:', isValid);
         return isValid;
     }
     
