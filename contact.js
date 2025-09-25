@@ -45,12 +45,6 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Event object:', e);
             console.log('Event target:', e.target);
             
-            // preventDefault前に値を確認
-            const nameInput = document.getElementById('name');
-            const emailInput = document.getElementById('email');
-            const subjectInput = document.getElementById('subject');
-            const messageInput = document.getElementById('message');
-            
             console.log('BEFORE preventDefault - Values:');
             console.log('name value:', nameInput.value);
             console.log('email value:', emailInput.value);
@@ -79,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('FormData ' + key + ': "' + value + '"');
             }
             
-            // 値を直接取得
+            // 値を直接取得（キャッシュした要素を使用）
             const formObj = {
                 name: nameInput ? nameInput.value : '',
                 email: emailInput ? emailInput.value : '',
@@ -110,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const nameInput = document.getElementById('name');
         const emailInput = document.getElementById('email');
         const subjectInput = document.getElementById('subject');
-        const messageInput = document.getElementById('message');
+        const messageInputd = document.getElementById('message');
         
         console.log('Name input:', nameInput);
         console.log('Name value:', nameInput ? nameInput.value : 'null');
