@@ -307,15 +307,15 @@
 
                 if (data.success) {
                     // 統計情報を更新
-                    document.getElementById('total-contacts').textContent = data.data.contactStats?.total || 0;
-                    document.getElementById('unread-contacts').textContent = data.data.contactStats?.unread || 0;
-                    document.getElementById('today-contacts').textContent = data.data.contactStats?.today || 0;
-                    document.getElementById('total-posts').textContent = data.data.snsStats?.total || 0;
+                    document.getElementById('total-contacts').textContent = data.data.contacts?.total || 0;
+                    document.getElementById('unread-contacts').textContent = data.data.contacts?.unread || 0;
+                    document.getElementById('today-contacts').textContent = data.data.contacts?.today || 0;
+                    document.getElementById('total-posts').textContent = data.data.sns?.total_posts || 0;
 
                     // お問い合わせ一覧を更新
                     const contactList = document.getElementById('contact-list');
-                    if (data.data.recentContacts && data.data.recentContacts.length > 0) {
-                        contactList.innerHTML = data.data.recentContacts.map(contact => `
+                    if (data.data.recent_contacts && data.data.recent_contacts.length > 0) {
+                        contactList.innerHTML = data.data.recent_contacts.map(contact => `
                             <div class="contact-item">
                                 <div class="contact-info">
                                     <div class="contact-name">${contact.name}</div>
@@ -333,8 +333,8 @@
 
                     // SNS投稿一覧を更新
                     const snsList = document.getElementById('sns-list');
-                    if (data.data.recentPosts && data.data.recentPosts.length > 0) {
-                        snsList.innerHTML = data.data.recentPosts.map(post => `
+                    if (data.data.recent_posts && data.data.recent_posts.length > 0) {
+                        snsList.innerHTML = data.data.recent_posts.map(post => `
                             <div class="contact-item">
                                 <div class="contact-info">
                                     <div class="contact-name">${post.platform.toUpperCase()}</div>
