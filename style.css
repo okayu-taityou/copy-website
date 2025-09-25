@@ -212,12 +212,13 @@ main {
     z-index: 2;
 }
 
-.hero-content h1 {
+.hero-content h1,
+.hero-content h2 {
     font-size: 3.5rem;
     color: white;
     margin-bottom: 1.5rem;
-    font-weight: 800;
-    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    font-weight: 900;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
     line-height: 1.2;
 }
 
@@ -831,9 +832,11 @@ footer {
         min-height: 70vh;
     }
     
-    .hero-content h1 {
+    .hero-content h1,
+    .hero-content h2 {
         font-size: 2.5rem;
         line-height: 1.1;
+        font-weight: 900;
     }
     
     .hero-buttons {
@@ -1039,8 +1042,10 @@ footer {
         padding: 0 15px;
     }
     
-    .hero-content h1 {
+    .hero-content h1,
+    .hero-content h2 {
         font-size: 2.2rem;
+        font-weight: 900;
     }
     
     .hero-content p {
