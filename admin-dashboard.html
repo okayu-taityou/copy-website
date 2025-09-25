@@ -318,7 +318,7 @@
                     const contactList = document.getElementById('contact-list');
                     if (data.data.recent_contacts && data.data.recent_contacts.length > 0) {
                         contactList.innerHTML = data.data.recent_contacts.map(contact => `
-                            <div class="contact-item" onclick="toggleContactDetails(${contact.id}, '${contact.status}')" style="cursor: pointer;">
+                            <div class="contact-item clickable-contact" data-contact-id="${contact.id}" data-status="${contact.status}" style="cursor: pointer; padding: 10px; margin-bottom: 10px; border-radius: 8px; transition: background-color 0.2s;">
                                 <div class="contact-info">
                                     <div class="contact-name">${contact.name}</div>
                                     <div class="contact-email">${contact.email}</div>
@@ -336,6 +336,26 @@
                                 </div>
                             </div>
                         `).join('');
+                        
+                        // イベントリスナーを追加
+                        document.querySelectorAll('.clickable-contact').forEach(item => {
+                            item.addEventListener('click', function() {
+                                const contactId = this.getAttribute('data-contact-id');
+                                const status = this.getAttribute('data-status');
+                                console.log('📱 お問い合わせクリック:', contactId, status);
+                                toggleContactDetails(contactId, status);
+                            });
+                            
+                            // ホバー効果
+                            item.addEventListener('mouseenter', function() {
+                                this.style.backgroundColor = '#f8f9fa';
+                            });
+                            
+                            item.addEventListener('mouseleave', function() {
+                                this.style.backgroundColor = '';
+                            });
+                        });
+                        
                     } else {
                         contactList.innerHTML = '<div class="loading">お問い合わせはありません<br><a href="/api/admin/create-test-data" target="_blank" style="color: #00bcd4;">テストデータを作成</a></div>';
                     }
