@@ -270,8 +270,8 @@
         // ダッシュボードデータ読み込み
         async function loadDashboardData() {
             try {
-                console.log('ダッシュボードデータを読み込み中...');
-                console.log('使用するトークン:', token ? token.substring(0, 20) + '...' : 'なし');
+                console.log('🔄 ダッシュボードデータを読み込み中...');
+                console.log('🎟️ 使用するトークン:', token ? token.substring(0, 20) + '...' : 'なし');
                 
                 const response = await fetch('/api/admin/dashboard', {
                     headers: {
@@ -280,11 +280,11 @@
                     }
                 });
 
-                console.log('Response status:', response.status);
-                console.log('Response headers:', response.headers);
+                console.log('📊 Response status:', response.status);
+                console.log('📋 Response headers:', Object.fromEntries(response.headers.entries()));
                 
                 if (response.status === 401) {
-                    console.log('認証エラー (401) - トークンを再取得して再試行');
+                    console.log('❌ 認証エラー (401) - トークンを再取得して再試行');
                     // トークンを削除して再ログインを促す
                     localStorage.removeItem('adminToken');
                     document.getElementById('contact-list').innerHTML = `
@@ -303,7 +303,9 @@
                 }
 
                 const data = await response.json();
-                console.log('Dashboard data:', data);
+                console.log('📊 受信データ全体:', JSON.stringify(data, null, 2));
+                console.log('👥 お問い合わせ統計:', data.data?.contacts);
+                console.log('📧 最新お問い合わせ:', data.data?.recent_contacts);
 
                 if (data.success) {
                     // 統計情報を更新
