@@ -121,6 +121,10 @@ app.get('/admin/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin-login.html'));
 });
 
+app.get('/admin/dashboard', (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin-dashboard.html'));
+});
+
 // SPAのフォールバック（管理者ルートを除外）
 app.get('*', (req, res) => {
     // 管理者ルートやAPIルートは除外
