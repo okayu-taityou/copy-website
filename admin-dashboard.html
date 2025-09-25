@@ -187,6 +187,8 @@
     </div>
 
     <script>
+        let token = null; // グローバルトークン変数を宣言
+
         // 認証チェック
         function checkAuth() {
             token = localStorage.getItem('adminToken');
@@ -216,10 +218,19 @@
             }
             
             return true;
-        }        // ログアウト
+        }        
+        
+        // ログアウト
         function logout() {
             localStorage.removeItem('adminToken');
-            window.location.href = '/admin/login';
+            window.location.href = '/admin-login.html';
+        }
+
+        // ページ初期化
+        function initializePage() {
+            if (checkAuth()) {
+                loadDashboardData();
+            }
         }
 
         // ダッシュボードデータ読み込み
@@ -322,10 +333,14 @@
         }
 
         // ページ読み込み時にデータを取得
-        loadDashboardData();
+        initializePage();
 
         // 30秒ごとにデータを更新
-        setInterval(loadDashboardData, 30000);
+        setInterval(() => {
+            if (token) {
+                loadDashboardData();
+            }
+        }, 30000);
     </script>
 </body>
 </html>
