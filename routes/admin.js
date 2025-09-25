@@ -730,7 +730,7 @@ router.post('/mark-contact-read', authenticateToken, async (req, res) => {
             });
         }
         
-        const db = await getDatabase();
+        const db = database.getDb();
         
         // お問い合わせのステータスを既読に更新
         const updateResult = await new Promise((resolve, reject) => {
