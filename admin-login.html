@@ -125,7 +125,8 @@
                     </button>
                 </form>
                 <div class="create-admin-link">
-                    <a href="#" id="show-create-form">管理者アカウント作成</a>
+                    <a href="#" id="show-create-form">管理者アカウント作成</a> | 
+                    <a href="#" id="create-default-admin">デフォルト管理者作成</a>
                 </div>
             </div>
 
@@ -265,6 +266,55 @@
             } catch (error) {
                 showError('通信エラーが発生しました');
                 console.error('Create error:', error);
+            }
+        });
+
+        // デフォルト管理者作成
+        document.getElementById('create-default-admin').addEventListener('click', async function(e) {
+            e.preventDefault();
+            clearMessages();
+            
+            if (!confirm('デフォルト管理者アカウントを作成しますか？\n（ユーザー名: admin, パスワード: tennis123）')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/admin/create-default-admin');
+                const result = await response.json();
+                
+                if (result.success) {
+                    showSuccess(`管理者アカウントを作成しました！\nユーザー名: ${result.credentials.username}\nパスワード: ${result.credentials.password}\n\n自動的にログインします...`);
+                    
+                    // 自動ログイン
+                    setTimeout(async () => {
+                        try {
+                            const loginResponse = await fetch('/api/admin/login', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    username: result.credentials.username,
+                                    password: result.credentials.password
+                                })
+                            });
+                            
+                            const loginResult = await loginResponse.json();
+                            
+                            if (loginResult.success) {
+                                localStorage.setItem('adminToken', loginResult.token);
+                                window.location.href = '/admin-dashboard.html';
+                            }
+                        } catch (error) {
+                            console.error('自動ログインエラー:', error);
+                        }
+                    }, 2000);
+                } else {
+                    showError(result.error || 'アカウント作成に失敗しました');
+                }
+            } catch (error) {
+                console.error('デフォルト管理者作成エラー:', error);
+                showError('サーバーエラーが発生しました');
             }
         });
     </script>

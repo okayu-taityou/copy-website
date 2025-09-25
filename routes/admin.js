@@ -5,6 +5,65 @@ const { body, validationResult } = require('express-validator');
 const database = require('../database/init');
 const router = express.Router();
 
+// デフォルト管理者アカウント自動作成
+router.get('/create-default-admin', async (req, res) => {
+    try {
+        const db = database.getDb();
+        
+        // 既存の管理者をチェック
+        const existingAdmin = await new Promise((resolve, reject) => {
+            db.get('SELECT COUNT(*) as count FROM admins', [], (err, row) => {
+                if (err) reject(err);
+                else resolve(row.count);
+            });
+        });
+        
+        if (existingAdmin > 0) {
+            return res.json({
+                success: false,
+                error: '管理者アカウントは既に存在します'
+            });
+        }
+        
+        // デフォルト管理者アカウントを作成
+        const defaultAdmin = {
+            username: 'admin',
+            password: 'tennis123',
+            email: 'admin@tennis-club.com',
+            role: 'admin'
+        };
+        
+        const hashedPassword = await bcrypt.hash(defaultAdmin.password, 10);
+        
+        await new Promise((resolve, reject) => {
+            db.run(
+                'INSERT INTO admins (username, password_hash, email, role) VALUES (?, ?, ?, ?)',
+                [defaultAdmin.username, hashedPassword, defaultAdmin.email, defaultAdmin.role],
+                function(err) {
+                    if (err) reject(err);
+                    else resolve(this.lastID);
+                }
+            );
+        });
+        
+        res.json({
+            success: true,
+            message: 'デフォルト管理者アカウントを作成しました',
+            credentials: {
+                username: defaultAdmin.username,
+                password: defaultAdmin.password,
+                email: defaultAdmin.email
+            }
+        });
+    } catch (error) {
+        console.error('デフォルト管理者作成エラー:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
 // デバッグ用：管理者テーブルの状態確認
 router.get('/debug', async (req, res) => {
     try {
