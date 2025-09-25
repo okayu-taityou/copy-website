@@ -318,14 +318,23 @@
                     const contactList = document.getElementById('contact-list');
                     if (data.data.recent_contacts && data.data.recent_contacts.length > 0) {
                         contactList.innerHTML = data.data.recent_contacts.map(contact => `
-                            <div class="contact-item">
-                                <div class="contact-info">
-                                    <div class="contact-name">${contact.name}</div>
-                                    <div class="contact-email">${contact.email}</div>
-                                    <div class="contact-date">${new Date(contact.created_at).toLocaleString('ja-JP')}</div>
+                            <div class="contact-item" style="margin-bottom: 15px; padding: 15px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                <div class="contact-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                    <div class="contact-info">
+                                        <div class="contact-name" style="font-weight: 600; font-size: 1.1em; color: #333;">${contact.name}</div>
+                                        <div class="contact-email" style="color: #666; font-size: 0.9em;">${contact.email}</div>
+                                        <div class="contact-date" style="color: #999; font-size: 0.8em;">${new Date(contact.created_at).toLocaleString('ja-JP')}</div>
+                                    </div>
+                                    <div class="status-badge status-${contact.status}" style="padding: 4px 8px; border-radius: 12px; font-size: 0.8em; font-weight: 500; ${contact.status === 'unread' ? 'background: #ffebee; color: #c62828;' : contact.status === 'read' ? 'background: #e8f5e8; color: #2e7d32;' : 'background: #e3f2fd; color: #1565c0;'}">
+                                        ${contact.status === 'unread' ? '未読' : contact.status === 'read' ? '既読' : '返信済み'}
+                                    </div>
                                 </div>
-                                <div class="status-badge status-${contact.status}">
-                                    ${contact.status === 'unread' ? '未読' : contact.status === 'read' ? '既読' : '返信済み'}
+                                <div class="contact-details" style="border-top: 1px solid #eee; padding-top: 10px;">
+                                    ${contact.subject ? `<div class="contact-subject" style="margin-bottom: 8px;"><strong>件名:</strong> ${contact.subject}</div>` : ''}
+                                    <div class="contact-message" style="background: #f8f9fa; padding: 10px; border-radius: 4px; white-space: pre-wrap; font-size: 0.9em; line-height: 1.4;">
+                                        <strong>メッセージ:</strong><br>
+                                        ${contact.message || 'メッセージなし'}
+                                    </div>
                                 </div>
                             </div>
                         `).join('');
