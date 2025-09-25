@@ -3,20 +3,28 @@ document.addEventListener('DOMContentLoaded', function() {
     const contactForm = document.getElementById('contact-form');
     
     if (contactForm) {
+        console.log('✅ お問い合わせフォームが見つかりました');
         // フォーム送信のイベントリスナー
         contactForm.addEventListener('submit', function(e) {
             e.preventDefault();
+            console.log('📝 フォーム送信イベント発生');
             
             // フォームデータを取得
             const formData = new FormData(contactForm);
             const formObj = Object.fromEntries(formData);
+            console.log('📊 フォームデータ:', formObj);
             
             // バリデーション
             if (validateForm(formObj)) {
+                console.log('✅ バリデーション成功 - 送信処理開始');
                 // 模擬的な送信処理
                 simulateFormSubmission(formObj);
+            } else {
+                console.log('❌ バリデーションエラー');
             }
         });
+    } else {
+        console.log('❌ お問い合わせフォームが見つかりません');
     }
     
     // フォームバリデーション
@@ -121,10 +129,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 模擬的な送信処理
     function simulateFormSubmission(formData) {
+        console.log('🚀 送信処理開始:', formData);
         // ローディング表示
         showLoadingState();
         
         // 実際のバックエンドAPIに送信
+        console.log('📡 APIにデータ送信中...');
         fetch('/api/contact/send', {
             method: 'POST',
             headers: {
@@ -132,11 +142,16 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify(formData)
         })
-        .then(response => response.json())
+        .then(response => {
+            console.log('📨 API Response status:', response.status);
+            return response.json();
+        })
         .then(data => {
+            console.log('📊 API Response data:', data);
             hideLoadingState();
             
             if (data.success) {
+                console.log('✅ 送信成功 - contactId:', data.contactId);
                 // 成功メッセージを表示
                 showSuccessMessage();
                 
@@ -145,11 +160,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 console.log('お問い合わせ送信成功:', data);
             } else {
+                console.log('❌ 送信失敗:', data.error);
                 // エラーメッセージを表示
                 showErrors([data.error || 'お問い合わせの送信に失敗しました']);
             }
         })
         .catch(error => {
+            console.log('💥 ネットワークエラー:', error);
             hideLoadingState();
             console.error('送信エラー:', error);
             showErrors(['ネットワークエラーが発生しました。時間をおいて再試行してください。']);
