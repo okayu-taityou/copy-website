@@ -117,20 +117,37 @@ app.get('/sns', (req, res) => {
 });
 
 // 管理者ページのルート
-app.get('/admin/login', (req, res) => {
+app.get('/admin-login.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin-login.html'));
 });
 
-app.get('/admin/dashboard', (req, res) => {
+app.get('/admin-dashboard.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin-dashboard.html'));
 });
 
-app.get('/admin/test', (req, res) => {
+app.get('/admin-test.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin-test.html'));
 });
 
-app.get('/admin/setup', (req, res) => {
+app.get('/admin-setup.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin-setup.html'));
+});
+
+// 旧ルート（互換性のため）
+app.get('/admin/login', (req, res) => {
+    res.redirect('/admin-login.html');
+});
+
+app.get('/admin/dashboard', (req, res) => {
+    res.redirect('/admin-dashboard.html');
+});
+
+app.get('/admin/test', (req, res) => {
+    res.redirect('/admin-test.html');
+});
+
+app.get('/admin/setup', (req, res) => {
+    res.redirect('/admin-setup.html');
 });
 
 // SPAのフォールバック（管理者ルートを除外）

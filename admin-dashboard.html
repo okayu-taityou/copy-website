@@ -191,10 +191,13 @@
 
         // 認証チェック
         function checkAuth() {
+            console.log('🔍 認証チェック開始');
             token = localStorage.getItem('adminToken');
-            console.log('保存されたトークン:', token);
+            console.log('保存されたトークン:', token ? token.substring(0, 30) + '...' : 'なし');
+            
             if (!token) {
-                console.log('トークンがありません - ログインページにリダイレクト');
+                console.log('❌ トークンがありません - ログインページにリダイレクト');
+                alert('ログインが必要です。ログインページに移動します。');
                 window.location.href = '/admin-login.html';
                 return false;
             }
@@ -207,17 +210,20 @@
                 console.log('現在時刻:', new Date(currentTime * 1000));
                 
                 if (tokenPayload.exp < currentTime) {
-                    console.log('トークンが期限切れです');
+                    console.log('❌ トークンが期限切れです');
+                    alert('ログインの有効期限が切れました。再ログインしてください。');
                     logout();
                     return false;
                 }
+                
+                console.log('✅ トークンは有効です');
+                return true;
             } catch (error) {
-                console.error('トークン解析エラー:', error);
+                console.error('❌ トークン解析エラー:', error);
+                alert('認証エラーが発生しました。再ログインしてください。');
                 logout();
                 return false;
             }
-            
-            return true;
         }        
         
         // ログアウト
@@ -231,8 +237,22 @@
 
         // ページ初期化
         function initializePage() {
-            if (checkAuth()) {
-                loadDashboardData();
+            console.log('📄 ダッシュボードページ初期化開始');
+            try {
+                if (checkAuth()) {
+                    console.log('✅ 認証OK - データ読み込み開始');
+                    loadDashboardData();
+                } else {
+                    console.log('❌ 認証NG - 処理中断');
+                }
+            } catch (error) {
+                console.error('💥 ページ初期化エラー:', error);
+                document.getElementById('contact-list').innerHTML = `
+                    <div class="error">
+                        ページ初期化エラー: ${error.message}<br>
+                        <a href="/admin-login.html" style="color: #ff5722;">ログインページに戻る</a>
+                    </div>
+                `;
             }
         }
 
@@ -336,11 +356,23 @@
         }
 
         // ページ読み込み時にデータを取得
-        initializePage();
+        console.log('🚀 ダッシュボードページが読み込まれました');
+        
+        // DOM読み込み完了を待つ
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('📋 DOM読み込み完了 - 初期化開始');
+                initializePage();
+            });
+        } else {
+            console.log('📋 DOM既に読み込み済み - 即座に初期化');
+            initializePage();
+        }
 
         // 30秒ごとにデータを更新
         setInterval(() => {
             if (token) {
+                console.log('🔄 定期更新実行');
                 loadDashboardData();
             }
         }, 30000);
