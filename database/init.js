@@ -186,24 +186,24 @@ class Database {
             const samplePosts = [
                 {
                     platform: 'instagram',
-                    author: '○○大学テニス部',
-                    content: '今日は春季大会の練習試合でした！みんな調子よく、来週の本戦が楽しみです🎾 #テニス #大学テニス #春季大会',
+                    author: '東京電機大学硬式庭球部',
+                    content: '今日は関東学生大会の練習試合でした！北千住キャンパスのコートで熱戦が繰り広げられました🎾 #硬式庭球部 #東京電機大学 #関東学生大会',
                     likes_count: 42,
                     comments_count: 8,
                     shares_count: 3
                 },
                 {
                     platform: 'twitter',
-                    author: '○○大学テニス部',
-                    content: '新入部員募集中です！経験者・初心者問わず大歓迎！一緒にテニスを楽しみましょう！',
+                    author: '東京電機大学硬式庭球部',
+                    content: '新入部員募集中です！経験者・初心者問わず大歓迎！北千住駅徒歩1分の好立地で一緒にテニスを楽しみましょう！',
                     likes_count: 28,
                     comments_count: 5,
                     shares_count: 12
                 },
                 {
                     platform: 'instagram',
-                    author: '○○大学テニス部',
-                    content: 'コート整備お疲れ様でした！綺麗になったコートで明日からまた頑張ります💪',
+                    author: '東京電機大学硬式庭球部',
+                    content: 'コート整備お疲れ様でした！千住キャンパスの綺麗になったコートで明日からまた頑張ります💪',
                     likes_count: 35,
                     comments_count: 6,
                     shares_count: 2
