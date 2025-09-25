@@ -215,11 +215,12 @@ main {
 .hero-content h1,
 .hero-content h2 {
     font-size: 3.5rem;
-    color: white;
+    color: #ffffff;
     margin-bottom: 1.5rem;
     font-weight: 900;
-    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.5);
     line-height: 1.2;
+    letter-spacing: 1px;
 }
 
 .hero-content p {
