@@ -116,8 +116,18 @@ app.get('/sns', (req, res) => {
     res.sendFile(path.join(__dirname, 'sns.html'));
 });
 
-// SPAのフォールバック
+// 管理者ページのルート
+app.get('/admin/login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin-login.html'));
+});
+
+// SPAのフォールバック（管理者ルートを除外）
 app.get('*', (req, res) => {
+    // 管理者ルートやAPIルートは除外
+    if (req.path.startsWith('/admin') || req.path.startsWith('/api')) {
+        return res.status(404).json({ error: 'ページが見つかりません' });
+    }
+    
     // 拡張子がない場合はindex.htmlを返す
     if (!path.extname(req.path)) {
         res.sendFile(path.join(__dirname, 'index.html'));

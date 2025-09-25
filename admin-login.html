@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理者ページ - ○○大学テニス部</title>
+    <link rel="stylesheet" href="/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .admin-container {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #00bcd4, #26c6da);
+            padding: 20px;
+        }
+        .admin-card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+        .admin-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .admin-header h1 {
+            color: #00bcd4;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #00bcd4;
+        }
+        .btn-admin {
+            width: 100%;
+            padding: 14px;
+            background: #00bcd4;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn-admin:hover {
+            background: #00acc1;
+        }
+        .error-message {
+            color: #f44336;
+            background: #ffebee;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .success-message {
+            color: #4caf50;
+            background: #e8f5e9;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .create-admin-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .create-admin-link a {
+            color: #00bcd4;
+            text-decoration: none;
+        }
+        .create-admin-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-card">
+            <div class="admin-header">
+                <h1><i class="fas fa-shield-alt"></i> 管理者ログイン</h1>
+                <p>○○大学テニス部 管理システム</p>
+            </div>
+
+            <div id="error-message" class="error-message"></div>
+            <div id="success-message" class="success-message"></div>
+
+            <!-- ログインフォーム -->
+            <div id="login-form">
+                <form id="adminLoginForm">
+                    <div class="form-group">
+                        <label for="username">ユーザー名</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">パスワード</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn-admin">
+                        <i class="fas fa-sign-in-alt"></i> ログイン
+                    </button>
+                </form>
+                <div class="create-admin-link">
+                    <a href="#" id="show-create-form">管理者アカウント作成</a>
+                </div>
+            </div>
+
+            <!-- 管理者作成フォーム -->
+            <div id="create-form" style="display: none;">
+                <form id="adminCreateForm">
+                    <div class="form-group">
+                        <label for="new-username">ユーザー名</label>
+                        <input type="text" id="new-username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-password">パスワード</label>
+                        <input type="password" id="new-password" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-email">メールアドレス</label>
+                        <input type="email" id="new-email" name="email" required>
+                    </div>
+                    <button type="submit" class="btn-admin">
+                        <i class="fas fa-user-plus"></i> アカウント作成
+                    </button>
+                </form>
+                <div class="create-admin-link">
+                    <a href="#" id="show-login-form">ログインに戻る</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // フォーム切り替え
+        document.getElementById('show-create-form').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('create-form').style.display = 'block';
+            clearMessages();
+        });
+
+        document.getElementById('show-login-form').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('create-form').style.display = 'none';
+            document.getElementById('login-form').style.display = 'block';
+            clearMessages();
+        });
+
+        // メッセージをクリア
+        function clearMessages() {
+            document.getElementById('error-message').style.display = 'none';
+            document.getElementById('success-message').style.display = 'none';
+        }
+
+        // エラーメッセージ表示
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            document.getElementById('success-message').style.display = 'none';
+        }
+
+        // 成功メッセージ表示
+        function showSuccess(message) {
+            const successDiv = document.getElementById('success-message');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            document.getElementById('error-message').style.display = 'none';
+        }
+
+        // ログインフォーム送信
+        document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            clearMessages();
+
+            const formData = new FormData(e.target);
+            const loginData = {
+                username: formData.get('username'),
+                password: formData.get('password')
+            };
+
+            try {
+                const response = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(loginData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showSuccess('ログイン成功！ダッシュボードに移動します...');
+                    localStorage.setItem('adminToken', result.token);
+                    setTimeout(() => {
+                        window.location.href = '/admin/dashboard';
+                    }, 1500);
+                } else {
+                    showError(result.error || 'ログインに失敗しました');
+                }
+            } catch (error) {
+                showError('通信エラーが発生しました');
+                console.error('Login error:', error);
+            }
+        });
+
+        // アカウント作成フォーム送信
+        document.getElementById('adminCreateForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            clearMessages();
+
+            const formData = new FormData(e.target);
+            const createData = {
+                username: formData.get('username'),
+                password: formData.get('password'),
+                email: formData.get('email')
+            };
+
+            try {
+                const response = await fetch('/api/admin/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(createData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showSuccess('管理者アカウントが作成されました！ログインしてください。');
+                    setTimeout(() => {
+                        document.getElementById('create-form').style.display = 'none';
+                        document.getElementById('login-form').style.display = 'block';
+                    }, 2000);
+                } else {
+                    showError(result.error || 'アカウント作成に失敗しました');
+                }
+            } catch (error) {
+                showError('通信エラーが発生しました');
+                console.error('Create error:', error);
+            }
+        });
+    </script>
+</body>
+</html>
