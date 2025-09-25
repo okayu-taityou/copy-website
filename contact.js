@@ -1,6 +1,10 @@
 // お問い合わせフォームの機能
+console.log('🔧 contact.js が読み込まれました');
+
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('📋 DOM読み込み完了 - contact.js初期化開始');
     const contactForm = document.getElementById('contact-form');
+    console.log('🔍 フォーム要素検索結果:', contactForm);
     
     if (contactForm) {
         console.log('✅ お問い合わせフォームが見つかりました');
@@ -25,6 +29,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     } else {
         console.log('❌ お問い合わせフォームが見つかりません');
+        console.log('📝 現在のDOM内の全フォーム:', document.querySelectorAll('form'));
+        console.log('📝 contact-form IDを持つ要素:', document.querySelector('#contact-form'));
+        console.log('📝 全体のHTML:', document.body.innerHTML.length, '文字');
     }
     
     // フォームバリデーション
