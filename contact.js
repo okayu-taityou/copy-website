@@ -13,10 +13,25 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             console.log('📝 フォーム送信イベント発生');
             
-            // フォームデータを取得
-            const formData = new FormData(contactForm);
-            const formObj = Object.fromEntries(formData);
+            // フォームデータを取得 - 直接input要素から取得する方法に変更
+            const formObj = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                subject: document.getElementById('subject').value,
+                message: document.getElementById('message').value
+            };
             console.log('📊 フォームデータ:', formObj);
+            
+            // デバッグ: 各入力フィールドの状態を確認
+            console.log('🔍 入力フィールドの状態:');
+            console.log('  - name element:', document.getElementById('name'));
+            console.log('  - name value:', document.getElementById('name')?.value);
+            console.log('  - email element:', document.getElementById('email'));
+            console.log('  - email value:', document.getElementById('email')?.value);
+            console.log('  - subject element:', document.getElementById('subject'));
+            console.log('  - subject value:', document.getElementById('subject')?.value);
+            console.log('  - message element:', document.getElementById('message'));
+            console.log('  - message value:', document.getElementById('message')?.value);
             
             // バリデーション
             if (validateForm(formObj)) {
