@@ -315,6 +315,7 @@
             };
             
             const rememberMe = document.getElementById('remember-me').checked;
+            console.log('🔐 ログイン送信:', { username: loginData.username, rememberMe });
 
             try {
                 const response = await fetch('/api/admin/login', {
@@ -325,11 +326,22 @@
                     body: JSON.stringify(loginData)
                 });
 
+                console.log('📡 レスポンス受信:', response.status, response.statusText);
                 const result = await response.json();
+                console.log('📄 レスポンスデータ:', result);
 
                 if (result.success) {
+                    // トークンを確認
+                    const token = result.token || (result.data && result.data.token);
+                    console.log('🎟️ 受信トークン:', token ? '取得成功' : '取得失敗');
+                    
+                    if (!token) {
+                        throw new Error('トークンが取得できませんでした');
+                    }
+                    
                     showSuccess('ログイン成功！ダッシュボードに移動します...');
-                    localStorage.setItem('adminToken', result.token);
+                    localStorage.setItem('adminToken', token);
+                    console.log('💾 トークン保存完了');
                     
                     // ログイン記憶機能
                     if (rememberMe) {
@@ -338,22 +350,24 @@
                             savedAt: new Date().toISOString()
                         };
                         localStorage.setItem('adminCredentials', JSON.stringify(credentialsToSave));
-                        console.log('ログイン情報を記憶しました');
+                        console.log('🧠 ログイン情報を記憶しました');
                     } else {
                         // チェックが外れている場合は保存された情報を削除
                         localStorage.removeItem('adminCredentials');
-                        console.log('保存されたログイン情報を削除しました');
+                        console.log('🗑️ 保存されたログイン情報を削除しました');
                     }
                     
                     setTimeout(() => {
+                        console.log('🚀 ダッシュボードにリダイレクト');
                         window.location.href = '/admin-dashboard.html';
                     }, 1000);
                 } else {
+                    console.error('❌ ログイン失敗:', result);
                     showError(result.error || 'ログインに失敗しました');
                 }
             } catch (error) {
-                showError('通信エラーが発生しました');
-                console.error('Login error:', error);
+                console.error('💥 通信エラー:', error);
+                showError('通信エラーが発生しました: ' + error.message);
             }
         });
 

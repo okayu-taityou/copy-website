@@ -241,9 +241,13 @@ const loginValidation = [
 ];
 
 router.post('/login', loginValidation, async (req, res) => {
+    console.log('🔐 ログイン試行開始:', new Date().toISOString());
+    console.log('受信データ:', { username: req.body.username, hasPassword: !!req.body.password });
+    
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
+            console.log('❌ バリデーションエラー:', errors.array());
             return res.status(400).json({
                 success: false,
                 error: 'バリデーションエラー',
@@ -253,41 +257,63 @@ router.post('/login', loginValidation, async (req, res) => {
 
         const { username, password } = req.body;
         const db = database.getDb();
+        console.log('📋 データベース接続確認済み');
         
         // ユーザー検索
         const admin = await new Promise((resolve, reject) => {
+            console.log('🔍 管理者検索中:', username);
             const sql = 'SELECT * FROM admins WHERE username = ?';
             db.get(sql, [username], (err, row) => {
-                if (err) reject(err);
-                else resolve(row);
+                if (err) {
+                    console.error('❌ データベースエラー:', err);
+                    reject(err);
+                } else {
+                    console.log('🔍 検索結果:', row ? '管理者が見つかりました' : '管理者が見つかりません');
+                    resolve(row);
+                }
             });
         });
 
         if (!admin) {
+            console.log('❌ 管理者が見つかりません:', username);
             return res.status(401).json({
                 success: false,
                 error: 'ユーザー名またはパスワードが正しくありません'
             });
         }
 
+        console.log('🔑 パスワード検証中...');
         // パスワード確認
         const isValidPassword = await bcrypt.compare(password, admin.password_hash);
         if (!isValidPassword) {
+            console.log('❌ パスワードが正しくありません');
             return res.status(401).json({
                 success: false,
                 error: 'ユーザー名またはパスワードが正しくありません'
             });
         }
+
+        console.log('✅ パスワード検証成功');
+        console.log('📝 ログイン時刻更新中...');
+
+        console.log('✅ パスワード検証成功');
+        console.log('📝 ログイン時刻更新中...');
 
         // ログイン時刻更新
         await new Promise((resolve, reject) => {
             const sql = 'UPDATE admins SET last_login = CURRENT_TIMESTAMP WHERE id = ?';
             db.run(sql, [admin.id], (err) => {
-                if (err) reject(err);
-                else resolve();
+                if (err) {
+                    console.error('❌ ログイン時刻更新エラー:', err);
+                    reject(err);
+                } else {
+                    console.log('✅ ログイン時刻更新完了');
+                    resolve();
+                }
             });
         });
 
+        console.log('🎟️ JWTトークン生成中...');
         // JWTトークン生成
         const token = jwt.sign(
             { 
@@ -300,9 +326,13 @@ router.post('/login', loginValidation, async (req, res) => {
             { expiresIn: JWT_EXPIRES }
         );
 
+        console.log('✅ JWTトークン生成完了');
+        console.log('🚀 ログイン成功レスポンス送信');
+
         res.json({
             success: true,
             message: 'ログインしました',
+            token: token,  // フロントエンドが期待する形式に修正
             data: {
                 token,
                 user: {
@@ -316,7 +346,7 @@ router.post('/login', loginValidation, async (req, res) => {
         });
 
     } catch (error) {
-        console.error('ログインエラー:', error);
+        console.error('💥 ログインエラー:', error);
         res.status(500).json({
             success: false,
             error: 'ログイン処理に失敗しました'
