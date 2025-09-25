@@ -96,6 +96,65 @@
         .create-admin-link a:hover {
             text-decoration: underline;
         }
+
+        .checkbox-container {
+            display: block;
+            position: relative;
+            padding-left: 30px;
+            margin: 15px 0;
+            cursor: pointer;
+            font-size: 14px;
+            color: #555;
+            user-select: none;
+        }
+
+        .checkbox-container input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 18px;
+            width: 18px;
+            background-color: #eee;
+            border: 2px solid #ddd;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-container:hover input ~ .checkmark {
+            background-color: #f0f0f0;
+            border-color: #00bcd4;
+        }
+
+        .checkbox-container input:checked ~ .checkmark {
+            background-color: #00bcd4;
+            border-color: #00bcd4;
+        }
+
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+
+        .checkbox-container input:checked ~ .checkmark:after {
+            display: block;
+        }
+
+        .checkbox-container .checkmark:after {
+            left: 5px;
+            top: 1px;
+            width: 6px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
     </style>
 </head>
 <body>
@@ -119,6 +178,13 @@
                     <div class="form-group">
                         <label for="password">パスワード</label>
                         <input type="password" id="password" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="remember-me" name="rememberMe">
+                            <span class="checkmark"></span>
+                            ログイン状態を記憶する (30日間)
+                        </label>
                     </div>
                     <button type="submit" class="btn-admin">
                         <i class="fas fa-sign-in-alt"></i> ログイン
@@ -157,6 +223,49 @@
     </div>
 
     <script>
+        // ページ読み込み時に保存されたログイン情報をチェック
+        document.addEventListener('DOMContentLoaded', function() {
+            checkSavedLogin();
+        });
+
+        // 保存されたログイン情報をチェック
+        function checkSavedLogin() {
+            const savedCredentials = localStorage.getItem('adminCredentials');
+            const adminToken = localStorage.getItem('adminToken');
+            
+            if (savedCredentials && adminToken) {
+                try {
+                    const credentials = JSON.parse(savedCredentials);
+                    
+                    // トークンの有効性をチェック
+                    const tokenPayload = JSON.parse(atob(adminToken.split('.')[1]));
+                    const currentTime = Math.floor(Date.now() / 1000);
+                    
+                    if (tokenPayload.exp > currentTime) {
+                        // 有効なトークンがある場合は自動ログイン
+                        showSuccess(`保存されたアカウント（${credentials.username}）で自動ログインしています...`);
+                        setTimeout(() => {
+                            window.location.href = '/admin-dashboard.html';
+                        }, 1000);
+                        return;
+                    }
+                } catch (error) {
+                    console.log('保存されたログイン情報に問題があります:', error);
+                }
+            }
+            
+            // 保存されたフォーム情報を復元
+            if (savedCredentials) {
+                try {
+                    const credentials = JSON.parse(savedCredentials);
+                    document.getElementById('username').value = credentials.username;
+                    document.getElementById('remember-me').checked = true;
+                } catch (error) {
+                    console.log('保存された認証情報の復元に失敗:', error);
+                }
+            }
+        }
+
         // フォーム切り替え
         document.getElementById('show-create-form').addEventListener('click', function(e) {
             e.preventDefault();
@@ -204,6 +313,8 @@
                 username: formData.get('username'),
                 password: formData.get('password')
             };
+            
+            const rememberMe = document.getElementById('remember-me').checked;
 
             try {
                 const response = await fetch('/api/admin/login', {
@@ -219,9 +330,24 @@
                 if (result.success) {
                     showSuccess('ログイン成功！ダッシュボードに移動します...');
                     localStorage.setItem('adminToken', result.token);
+                    
+                    // ログイン記憶機能
+                    if (rememberMe) {
+                        const credentialsToSave = {
+                            username: loginData.username,
+                            savedAt: new Date().toISOString()
+                        };
+                        localStorage.setItem('adminCredentials', JSON.stringify(credentialsToSave));
+                        console.log('ログイン情報を記憶しました');
+                    } else {
+                        // チェックが外れている場合は保存された情報を削除
+                        localStorage.removeItem('adminCredentials');
+                        console.log('保存されたログイン情報を削除しました');
+                    }
+                    
                     setTimeout(() => {
-                        window.location.href = '/admin/dashboard';
-                    }, 1500);
+                        window.location.href = '/admin-dashboard.html';
+                    }, 1000);
                 } else {
                     showError(result.error || 'ログインに失敗しました');
                 }
