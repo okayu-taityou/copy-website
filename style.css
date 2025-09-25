@@ -251,6 +251,18 @@ main {
     background-clip: text;
 }
 
+.hero-title-line3 {
+    display: inline-block;
+    font-size: 3.0rem;
+    font-weight: 700;
+    animation: fadeInUp 1s ease-out 0.9s both;
+    background: linear-gradient(45deg, #ffeb3b 0%, #ff9800 50%, #ffeb3b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 20px rgba(255, 193, 7, 0.5);
+}
+
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -887,6 +899,10 @@ footer {
         font-size: 3.2rem;
     }
     
+    .hero-title-line3 {
+        font-size: 2.6rem;
+    }
+    
     .hero-buttons {
         justify-content: center;
         flex-direction: column;
@@ -1102,6 +1118,10 @@ footer {
     
     .hero-title-line2 {
         font-size: 2.8rem;
+    }
+    
+    .hero-title-line3 {
+        font-size: 2.2rem;
     }
     
     .hero-content p {
