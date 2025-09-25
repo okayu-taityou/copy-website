@@ -715,4 +715,60 @@ router.get('/create-test-data', async (req, res) => {
     }
 });
 
+// お問い合わせを既読にマーク
+router.post('/mark-contact-read', authenticateToken, async (req, res) => {
+    console.log('📖 お問い合わせ既読マーク要求:', req.body);
+    
+    try {
+        const { contactId } = req.body;
+        
+        if (!contactId) {
+            return res.status(400).json({
+                success: false,
+                error: 'お問い合わせIDが必要です'
+            });
+        }
+        
+        const db = await getDatabase();
+        
+        // お問い合わせのステータスを既読に更新
+        const updateResult = await new Promise((resolve, reject) => {
+            const sql = `
+                UPDATE contacts 
+                SET status = 'read', 
+                    read_at = datetime('now', 'localtime')
+                WHERE id = ? AND status = 'unread'
+            `;
+            
+            db.run(sql, [contactId], function(err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve({ changes: this.changes });
+                }
+            });
+        });
+        
+        if (updateResult.changes > 0) {
+            console.log(`✅ お問い合わせ ${contactId} を既読にマークしました`);
+            res.json({
+                success: true,
+                message: 'お問い合わせを既読にマークしました'
+            });
+        } else {
+            res.json({
+                success: false,
+                error: 'お問い合わせが見つからないか、既に既読です'
+            });
+        }
+        
+    } catch (error) {
+        console.error('既読マークエラー:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
 module.exports = router;

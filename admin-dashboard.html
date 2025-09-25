@@ -318,18 +318,16 @@
                     const contactList = document.getElementById('contact-list');
                     if (data.data.recent_contacts && data.data.recent_contacts.length > 0) {
                         contactList.innerHTML = data.data.recent_contacts.map(contact => `
-                            <div class="contact-item" style="margin-bottom: 15px; padding: 15px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                                <div class="contact-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                    <div class="contact-info">
-                                        <div class="contact-name" style="font-weight: 600; font-size: 1.1em; color: #333;">${contact.name}</div>
-                                        <div class="contact-email" style="color: #666; font-size: 0.9em;">${contact.email}</div>
-                                        <div class="contact-date" style="color: #999; font-size: 0.8em;">${new Date(contact.created_at).toLocaleString('ja-JP')}</div>
-                                    </div>
-                                    <div class="status-badge status-${contact.status}" style="padding: 4px 8px; border-radius: 12px; font-size: 0.8em; font-weight: 500; ${contact.status === 'unread' ? 'background: #ffebee; color: #c62828;' : contact.status === 'read' ? 'background: #e8f5e8; color: #2e7d32;' : 'background: #e3f2fd; color: #1565c0;'}">
-                                        ${contact.status === 'unread' ? '未読' : contact.status === 'read' ? '既読' : '返信済み'}
-                                    </div>
+                            <div class="contact-item" onclick="toggleContactDetails(${contact.id}, '${contact.status}')" style="cursor: pointer;">
+                                <div class="contact-info">
+                                    <div class="contact-name">${contact.name}</div>
+                                    <div class="contact-email">${contact.email}</div>
+                                    <div class="contact-date">${new Date(contact.created_at).toLocaleString('ja-JP')}</div>
                                 </div>
-                                <div class="contact-details" style="border-top: 1px solid #eee; padding-top: 10px;">
+                                <div class="status-badge status-${contact.status}" id="status-${contact.id}">
+                                    ${contact.status === 'unread' ? '未読' : contact.status === 'read' ? '既読' : '返信済み'}
+                                </div>
+                                <div class="contact-details" id="details-${contact.id}" style="display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee;">
                                     ${contact.subject ? `<div class="contact-subject" style="margin-bottom: 8px;"><strong>件名:</strong> ${contact.subject}</div>` : ''}
                                     <div class="contact-message" style="background: #f8f9fa; padding: 10px; border-radius: 4px; white-space: pre-wrap; font-size: 0.9em; line-height: 1.4;">
                                         <strong>メッセージ:</strong><br>
@@ -375,6 +373,58 @@
                 document.getElementById('contact-list').innerHTML = errorMessage;
                 document.getElementById('sns-list').innerHTML = errorMessage;
             }
+        }
+
+        // お問い合わせ詳細の表示/非表示を切り替え
+        function toggleContactDetails(contactId, currentStatus) {
+            const detailsElement = document.getElementById(`details-${contactId}`);
+            const statusElement = document.getElementById(`status-${contactId}`);
+            
+            if (detailsElement.style.display === 'none') {
+                // 詳細を表示
+                detailsElement.style.display = 'block';
+                
+                // 未読の場合は既読にする
+                if (currentStatus === 'unread') {
+                    markAsRead(contactId);
+                }
+            } else {
+                // 詳細を非表示
+                detailsElement.style.display = 'none';
+            }
+        }
+
+        // お問い合わせを既読にマーク
+        function markAsRead(contactId) {
+            console.log(`📖 お問い合わせ ${contactId} を既読にマーク中...`);
+            
+            fetch('/api/admin/mark-contact-read', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ contactId: contactId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('✅ 既読マーク成功');
+                    // UIを更新
+                    const statusElement = document.getElementById(`status-${contactId}`);
+                    if (statusElement) {
+                        statusElement.textContent = '既読';
+                        statusElement.className = 'status-badge status-read';
+                    }
+                    // 統計を更新
+                    loadDashboardData();
+                } else {
+                    console.error('❌ 既読マーク失敗:', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('💥 既読マーク中にエラー:', error);
+            });
         }
 
         // ページ読み込み時にデータを取得
