@@ -5,6 +5,44 @@ const { body, validationResult } = require('express-validator');
 const database = require('../database/init');
 const router = express.Router();
 
+// デバッグ用：管理者テーブルの状態確認
+router.get('/debug', async (req, res) => {
+    try {
+        const db = database.getDb();
+        
+        // 管理者の数を確認
+        const adminCount = await new Promise((resolve, reject) => {
+            db.get('SELECT COUNT(*) as count FROM admins', [], (err, row) => {
+                if (err) reject(err);
+                else resolve(row.count);
+            });
+        });
+        
+        // 管理者一覧を確認（パスワードハッシュは除外）
+        const adminList = await new Promise((resolve, reject) => {
+            db.all('SELECT id, username, email, role, created_at FROM admins', [], (err, rows) => {
+                if (err) reject(err);
+                else resolve(rows);
+            });
+        });
+        
+        res.json({
+            success: true,
+            data: {
+                adminCount,
+                adminList,
+                jwtSecret: process.env.JWT_SECRET ? '設定済み' : '未設定',
+                timestamp: new Date().toISOString()
+            }
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
 const JWT_SECRET = process.env.JWT_SECRET || 'tennis-club-secret-key-2023';
 const JWT_EXPIRES = process.env.JWT_EXPIRES || '7d';
 
@@ -354,6 +392,54 @@ router.post('/setup', async (req, res) => {
         res.status(500).json({
             success: false,
             error: '管理者の作成に失敗しました'
+        });
+    }
+});
+
+// 強制管理者作成（デバッグ用）
+router.post('/force-create', async (req, res) => {
+    try {
+        const { username, password, email } = req.body;
+        
+        if (!username || !password || !email) {
+            return res.status(400).json({
+                success: false,
+                error: 'ユーザー名、パスワード、メールアドレスは必須です'
+            });
+        }
+
+        const db = database.getDb();
+        
+        // パスワードハッシュ化
+        const saltRounds = 10;
+        const passwordHash = await bcrypt.hash(password, saltRounds);
+
+        // 管理者作成（重複チェックなし）
+        const adminId = await new Promise((resolve, reject) => {
+            const sql = `
+                INSERT INTO admins (username, password_hash, email, role)
+                VALUES (?, ?, ?, 'admin')
+            `;
+            db.run(sql, [username, passwordHash, email], function(err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(this.lastID);
+                }
+            });
+        });
+
+        res.json({
+            success: true,
+            message: '管理者が作成されました',
+            adminId: adminId
+        });
+
+    } catch (error) {
+        console.error('強制管理者作成エラー:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
         });
     }
 });
