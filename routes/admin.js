@@ -176,7 +176,8 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
         // 最新のお問い合わせ
         const recentContacts = await new Promise((resolve, reject) => {
             const sql = `
-                SELECT id, name, email, subject, message, status, created_at
+                SELECT id, name, email, subject, message, status, 
+                       datetime(created_at, '+9 hours') as created_at
                 FROM contacts 
                 ORDER BY created_at DESC 
                 LIMIT 5
@@ -736,7 +737,7 @@ router.post('/mark-contact-read', authenticateToken, async (req, res) => {
             const sql = `
                 UPDATE contacts 
                 SET status = 'read', 
-                    read_at = datetime('now', 'localtime')
+                    read_at = datetime('now', '+9 hours')
                 WHERE id = ? AND status = 'unread'
             `;
             
@@ -744,6 +745,7 @@ router.post('/mark-contact-read', authenticateToken, async (req, res) => {
                 if (err) {
                     reject(err);
                 } else {
+                    console.log(`📖 UPDATE実行結果: changes=${this.changes}, lastID=${this.lastID}`);
                     resolve({ changes: this.changes });
                 }
             });

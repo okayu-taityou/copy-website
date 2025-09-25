@@ -444,6 +444,7 @@
         // お問い合わせを既読にマーク
         function markAsRead(contactId) {
             console.log(`📖 お問い合わせ ${contactId} を既読にマーク中...`);
+            console.log('使用するトークン:', token ? token.substring(0, 30) + '...' : 'なし');
             
             fetch('/api/admin/mark-contact-read', {
                 method: 'POST',
@@ -453,8 +454,12 @@
                 },
                 body: JSON.stringify({ contactId: contactId })
             })
-            .then(response => response.json())
+            .then(response => {
+                console.log('📨 既読マーク APIレスポンス status:', response.status);
+                return response.json();
+            })
             .then(data => {
+                console.log('📊 既読マーク APIレスポンス data:', data);
                 if (data.success) {
                     console.log('✅ 既読マーク成功');
                     // UIを更新
@@ -462,15 +467,23 @@
                     if (statusElement) {
                         statusElement.textContent = '既読';
                         statusElement.className = 'status-badge status-read';
+                        console.log('✅ UI更新完了');
+                    } else {
+                        console.error('❌ ステータス要素が見つかりません:', `status-${contactId}`);
                     }
                     // 統計を更新
-                    loadDashboardData();
+                    setTimeout(() => {
+                        console.log('🔄 統計データを再読み込み中...');
+                        loadDashboardData();
+                    }, 1000);
                 } else {
                     console.error('❌ 既読マーク失敗:', data.error);
+                    alert('既読マークに失敗しました: ' + (data.error || '不明なエラー'));
                 }
             })
             .catch(error => {
                 console.error('💥 既読マーク中にエラー:', error);
+                alert('ネットワークエラーが発生しました');
             });
         }
 
