@@ -316,7 +316,21 @@
 
                     // お問い合わせ一覧を更新
                     const contactList = document.getElementById('contact-list');
+                    console.log('📧 受信したお問い合わせデータ:', data.data.recent_contacts);
+                    
                     if (data.data.recent_contacts && data.data.recent_contacts.length > 0) {
+                        // 各お問い合わせの詳細をログ出力
+                        data.data.recent_contacts.forEach(contact => {
+                            console.log(`お問い合わせ ${contact.id}:`, {
+                                name: contact.name,
+                                email: contact.email,
+                                subject: contact.subject,
+                                message: contact.message,
+                                status: contact.status,
+                                created_at: contact.created_at
+                            });
+                        });
+                        
                         contactList.innerHTML = data.data.recent_contacts.map(contact => `
                             <div class="contact-item clickable-contact" data-contact-id="${contact.id}" data-status="${contact.status}" style="cursor: pointer; padding: 10px; margin-bottom: 10px; border-radius: 8px; transition: background-color 0.2s;">
                                 <div class="contact-info">
@@ -397,20 +411,33 @@
 
         // お問い合わせ詳細の表示/非表示を切り替え
         function toggleContactDetails(contactId, currentStatus) {
+            console.log(`🔍 toggleContactDetails called: contactId=${contactId}, status=${currentStatus}`);
+            
             const detailsElement = document.getElementById(`details-${contactId}`);
             const statusElement = document.getElementById(`status-${contactId}`);
             
-            if (detailsElement.style.display === 'none') {
-                // 詳細を表示
-                detailsElement.style.display = 'block';
-                
-                // 未読の場合は既読にする
-                if (currentStatus === 'unread') {
-                    markAsRead(contactId);
+            console.log('詳細要素:', detailsElement);
+            console.log('ステータス要素:', statusElement);
+            console.log('現在の表示状態:', detailsElement ? detailsElement.style.display : 'element not found');
+            
+            if (detailsElement) {
+                if (detailsElement.style.display === 'none' || detailsElement.style.display === '') {
+                    // 詳細を表示
+                    detailsElement.style.display = 'block';
+                    console.log('✅ 詳細を表示しました');
+                    
+                    // 未読の場合は既読にする
+                    if (currentStatus === 'unread') {
+                        console.log('📖 未読のため既読にマークします');
+                        markAsRead(contactId);
+                    }
+                } else {
+                    // 詳細を非表示
+                    detailsElement.style.display = 'none';
+                    console.log('❌ 詳細を非表示にしました');
                 }
             } else {
-                // 詳細を非表示
-                detailsElement.style.display = 'none';
+                console.error('❌ 詳細要素が見つかりません:', `details-${contactId}`);
             }
         }
 

@@ -176,7 +176,7 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
         // 最新のお問い合わせ
         const recentContacts = await new Promise((resolve, reject) => {
             const sql = `
-                SELECT id, name, email, subject, status, created_at
+                SELECT id, name, email, subject, message, status, created_at
                 FROM contacts 
                 ORDER BY created_at DESC 
                 LIMIT 5
