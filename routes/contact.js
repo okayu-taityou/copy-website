@@ -90,110 +90,96 @@ router.post('/send', contactValidation, async (req, res) => {
             });
         });
 
-        // メール送信
-        const transporter = createMailTransporter();
+        // メール送信（簡単設定）
+        let emailStatus = 'データベースに保存完了';
         
-        // 管理者向けメール
-        const adminMailOptions = {
-            from: process.env.SMTP_USER || 'noreply@tennis-club.com',
-            to: process.env.ADMIN_EMAIL || 'admin@tennis-club.com',
-            subject: `【テニス部HP】新しいお問い合わせ: ${subject || '件名なし'}`,
-            html: `
-                <div style="font-family: 'Noto Sans JP', sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #00bcd4; border-bottom: 2px solid #00bcd4; padding-bottom: 10px;">
-                        🎾 新しいお問い合わせ
-                    </h2>
-                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                        <p><strong>お名前:</strong> ${name}</p>
-                        <p><strong>メールアドレス:</strong> ${email}</p>
-                        ${phone ? `<p><strong>電話番号:</strong> ${phone}</p>` : ''}
-                        ${subject ? `<p><strong>件名:</strong> ${subject}</p>` : ''}
-                        <div style="margin-top: 20px;">
-                            <strong>メッセージ:</strong>
-                            <div style="background: white; padding: 15px; border-radius: 4px; margin-top: 10px; border-left: 4px solid #00bcd4;">
-                                ${message.replace(/\n/g, '<br>')}
-                            </div>
-                        </div>
-                    </div>
-                    <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin: 20px 0; font-size: 0.9em;">
-                        <p><strong>受信情報:</strong></p>
-                        <p>ID: ${contactId}</p>
-                        <p>受信日時: ${new Date().toLocaleString('ja-JP')}</p>
-                        <p>IPアドレス: ${clientIp}</p>
-                    </div>
-                    <p style="color: #666; font-size: 0.9em; margin-top: 30px;">
-                        このメールは○○大学テニス部のホームページから自動送信されました。
-                    </p>
-                </div>
-            `
-        };
-
-        // 自動返信メール
-        const replyMailOptions = {
-            from: process.env.SMTP_USER || 'noreply@tennis-club.com',
-            to: email,
-            subject: '【○○大学テニス部】お問い合わせありがとうございます',
-            html: `
-                <div style="font-family: 'Noto Sans JP', sans-serif; max-width: 600px; margin: 0 auto;">
-                    <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #00bcd4, #26c6da); color: white; border-radius: 8px 8px 0 0;">
-                        <h1 style="margin: 0; font-size: 1.8em;">🎾 ○○大学テニス部</h1>
-                        <p style="margin: 10px 0 0; opacity: 0.9;">お問い合わせありがとうございます</p>
-                    </div>
-                    <div style="padding: 30px; background: white; border-radius: 0 0 8px 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
-                        <p><strong>${name}</strong> 様</p>
-                        <p>この度は○○大学テニス部へお問い合わせいただき、誠にありがとうございます。</p>
-                        <p>以下の内容でお問い合わせを承りました。</p>
-                        
-                        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                            ${subject ? `<p><strong>件名:</strong> ${subject}</p>` : ''}
-                            <div style="margin-top: 15px;">
-                                <strong>お問い合わせ内容:</strong>
-                                <div style="background: white; padding: 15px; border-radius: 4px; margin-top: 10px; border-left: 4px solid #00bcd4;">
-                                    ${message.replace(/\n/g, '<br>')}
+        if (process.env.ENABLE_EMAIL === 'true' && process.env.SMTP_USER && process.env.SMTP_PASS) {
+            try {
+                const transporter = createMailTransporter();
+                
+                // 管理者向けメール
+                const adminMailOptions = {
+                    from: process.env.SMTP_USER || 'noreply@tennis-club.com',
+                    to: process.env.ADMIN_EMAIL || 'admin@tennis-club.com',
+                    subject: `【テニス部HP】新しいお問い合わせ: ${subject || '件名なし'}`,
+                    html: `
+                        <div style="font-family: 'Noto Sans JP', sans-serif; max-width: 600px; margin: 0 auto;">
+                            <h2 style="color: #00bcd4; border-bottom: 2px solid #00bcd4; padding-bottom: 10px;">
+                                🎾 新しいお問い合わせ
+                            </h2>
+                            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                                <p><strong>お名前:</strong> ${name}</p>
+                                <p><strong>メールアドレス:</strong> ${email}</p>
+                                ${phone ? `<p><strong>電話番号:</strong> ${phone}</p>` : ''}
+                                ${subject ? `<p><strong>件名:</strong> ${subject}</p>` : ''}
+                                <div style="margin-top: 20px;">
+                                    <strong>メッセージ:</strong>
+                                    <div style="background: white; padding: 15px; border-radius: 4px; margin-top: 10px; border-left: 4px solid #00bcd4;">
+                                        ${message.replace(/\n/g, '<br>')}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div style="background: #e8f5e8; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                            <h3 style="color: #2e7d32; margin: 0 0 15px;">📞 今後の流れ</h3>
-                            <ul style="margin: 0; padding-left: 20px; color: #333;">
-                                <li>内容を確認次第、担当者よりご連絡いたします</li>
-                                <li>通常1-2営業日以内にお返事いたします</li>
-                                <li>お急ぎの場合は直接お電話ください</li>
-                            </ul>
-                        </div>
-                        
-                        <div style="background: #fff3e0; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                            <h3 style="color: #f57c00; margin: 0 0 15px;">🏫 部活動情報</h3>
-                            <p style="margin: 0; color: #333;">
-                                <strong>練習時間:</strong> 平日 16:00-19:00 / 土日 9:00-17:00<br>
-                                <strong>練習場所:</strong> 大学テニスコート<br>
-                                <strong>見学:</strong> いつでも歓迎です！
+                            <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin: 20px 0; font-size: 0.9em;">
+                                <p><strong>受信情報:</strong></p>
+                                <p>ID: ${contactId}</p>
+                                <p>受信日時: ${new Date().toLocaleString('ja-JP')}</p>
+                                <p>IPアドレス: ${clientIp}</p>
+                            </div>
+                            <p style="color: #666; font-size: 0.9em; margin-top: 30px;">
+                                このメールは○○大学テニス部のホームページから自動送信されました。
                             </p>
                         </div>
-                        
-                        <p style="color: #666; font-size: 0.9em; margin-top: 30px; text-align: center;">
-                            このメールは自動送信されています。<br>
-                            心当たりがない場合は、お手数ですが削除してください。
-                        </p>
-                    </div>
-                </div>
-            `
-        };
+                    `
+                };
 
-        // メール送信実行
-        try {
-            await transporter.sendMail(adminMailOptions);
-            await transporter.sendMail(replyMailOptions);
-            console.log(`お問い合わせメール送信完了 - ID: ${contactId}, From: ${email}`);
-        } catch (mailError) {
-            console.error('メール送信エラー:', mailError);
-            // メール送信に失敗してもデータベース保存は成功とする
+                // 自動返信メール
+                const replyMailOptions = {
+                    from: process.env.SMTP_USER || 'noreply@tennis-club.com',
+                    to: email,
+                    subject: '【○○大学テニス部】お問い合わせありがとうございます',
+                    html: `
+                        <div style="font-family: 'Noto Sans JP', sans-serif; max-width: 600px; margin: 0 auto;">
+                            <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #00bcd4, #26c6da); color: white; border-radius: 8px 8px 0 0;">
+                                <h1 style="margin: 0; font-size: 1.8em;">🎾 ○○大学テニス部</h1>
+                                <p style="margin: 10px 0 0; opacity: 0.9;">お問い合わせありがとうございます</p>
+                            </div>
+                            <div style="padding: 30px; background: white; border-radius: 0 0 8px 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                                <p><strong>${name}</strong> 様</p>
+                                <p>この度は○○大学テニス部へお問い合わせいただき、誠にありがとうございます。</p>
+                                <p>担当者より後日ご連絡いたします。</p>
+                                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                                    ${subject ? `<p><strong>件名:</strong> ${subject}</p>` : ''}
+                                    <div style="margin-top: 15px;">
+                                        <strong>お問い合わせ内容:</strong>
+                                        <div style="background: white; padding: 15px; border-radius: 4px; margin-top: 10px; border-left: 4px solid #00bcd4;">
+                                            ${message.replace(/\n/g, '<br>')}
+                                        </div>
+                                    </div>
+                                </div>
+                                <p style="color: #666; font-size: 0.9em; margin-top: 30px; text-align: center;">
+                                    このメールは自動送信されています。
+                                </p>
+                            </div>
+                        </div>
+                    `
+                };
+
+                // メール送信実行
+                await transporter.sendMail(adminMailOptions);
+                await transporter.sendMail(replyMailOptions);
+                emailStatus = 'メール送信完了';
+                console.log(`お問い合わせメール送信完了 - ID: ${contactId}, From: ${email}`);
+            } catch (mailError) {
+                console.error('メール送信エラー:', mailError);
+                emailStatus = 'データベース保存完了（メール送信は後で設定可能）';
+            }
+        } else {
+            console.log('メール機能は無効です。データベースに保存しました。');
         }
 
         res.json({
             success: true,
-            message: 'お問い合わせを承りました。ご返信をお待ちください。',
+            message: emailStatus,
             contactId: contactId,
             timestamp: new Date().toISOString()
         });
