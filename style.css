@@ -214,13 +214,52 @@ main {
 
 .hero-content h1,
 .hero-content h2 {
-    font-size: 3.5rem;
+    font-size: 3.8rem;
     color: #ffffff;
     margin-bottom: 1.5rem;
     font-weight: 900;
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.5);
-    line-height: 1.2;
-    letter-spacing: 1px;
+    text-shadow: 
+        3px 3px 0px rgba(0, 0, 0, 0.8),
+        6px 6px 0px rgba(0, 0, 0, 0.5),
+        0 0 30px rgba(255, 255, 255, 0.3),
+        0 0 50px rgba(0, 188, 212, 0.4);
+    line-height: 1.1;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: linear-gradient(45deg, #ffffff 0%, #e1f5fe 30%, #ffffff 70%, #b3e5fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.7));
+}
+
+.hero-title-line1 {
+    display: inline-block;
+    font-size: 3.2rem;
+    margin-bottom: 0.2rem;
+    animation: fadeInUp 1s ease-out 0.3s both;
+}
+
+.hero-title-line2 {
+    display: inline-block;
+    font-size: 4.2rem;
+    font-weight: 900;
+    animation: fadeInUp 1s ease-out 0.6s both;
+    background: linear-gradient(45deg, #ffffff 0%, #4fc3f7 50%, #ffffff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .hero-content p {
@@ -835,9 +874,17 @@ footer {
     
     .hero-content h1,
     .hero-content h2 {
-        font-size: 2.5rem;
+        font-size: 2.8rem;
         line-height: 1.1;
         font-weight: 900;
+    }
+    
+    .hero-title-line1 {
+        font-size: 2.4rem;
+    }
+    
+    .hero-title-line2 {
+        font-size: 3.2rem;
     }
     
     .hero-buttons {
@@ -1045,8 +1092,16 @@ footer {
     
     .hero-content h1,
     .hero-content h2 {
-        font-size: 2.2rem;
+        font-size: 2.4rem;
         font-weight: 900;
+    }
+    
+    .hero-title-line1 {
+        font-size: 2.0rem;
+    }
+    
+    .hero-title-line2 {
+        font-size: 2.8rem;
     }
     
     .hero-content p {
