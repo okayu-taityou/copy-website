@@ -202,25 +202,31 @@
         // ダッシュボードデータ読み込み
         async function loadDashboardData() {
             try {
+                console.log('ダッシュボードデータを読み込み中...');
+                
                 const response = await fetch('/api/admin/dashboard', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
 
+                console.log('Response status:', response.status);
+                
                 if (response.status === 401) {
+                    console.log('認証エラー - ログアウト');
                     logout();
                     return;
                 }
 
                 const data = await response.json();
+                console.log('Dashboard data:', data);
 
                 if (data.success) {
                     // 統計情報を更新
-                    document.getElementById('total-contacts').textContent = data.data.contactStats.total || 0;
-                    document.getElementById('unread-contacts').textContent = data.data.contactStats.unread || 0;
-                    document.getElementById('today-contacts').textContent = data.data.contactStats.today || 0;
-                    document.getElementById('total-posts').textContent = data.data.snsStats.total || 0;
+                    document.getElementById('total-contacts').textContent = data.data.contactStats?.total || 0;
+                    document.getElementById('unread-contacts').textContent = data.data.contactStats?.unread || 0;
+                    document.getElementById('today-contacts').textContent = data.data.contactStats?.today || 0;
+                    document.getElementById('total-posts').textContent = data.data.snsStats?.total || 0;
 
                     // お問い合わせ一覧を更新
                     const contactList = document.getElementById('contact-list');
@@ -238,7 +244,7 @@
                             </div>
                         `).join('');
                     } else {
-                        contactList.innerHTML = '<div class="loading">お問い合わせはありません</div>';
+                        contactList.innerHTML = '<div class="loading">お問い合わせはありません<br><a href="/api/admin/create-test-data" target="_blank">テストデータを作成</a></div>';
                     }
 
                     // SNS投稿一覧を更新
@@ -257,7 +263,7 @@
                             </div>
                         `).join('');
                     } else {
-                        snsList.innerHTML = '<div class="loading">SNS投稿はありません</div>';
+                        snsList.innerHTML = '<div class="loading">SNS投稿はありません<br><a href="/api/admin/create-test-data" target="_blank">テストデータを作成</a></div>';
                     }
 
                 } else {
@@ -265,8 +271,13 @@
                 }
             } catch (error) {
                 console.error('ダッシュボード読み込みエラー:', error);
-                document.getElementById('contact-list').innerHTML = '<div class="error">データの読み込みに失敗しました</div>';
-                document.getElementById('sns-list').innerHTML = '<div class="error">データの読み込みに失敗しました</div>';
+                const errorMessage = `<div class="error">データの読み込みに失敗しました<br>
+                    エラー: ${error.message}<br>
+                    <a href="/api/admin/create-test-data" target="_blank">テストデータを作成</a><br>
+                    <a href="/api/admin/debug" target="_blank">デバッグ情報を確認</a>
+                </div>`;
+                document.getElementById('contact-list').innerHTML = errorMessage;
+                document.getElementById('sns-list').innerHTML = errorMessage;
             }
         }
 

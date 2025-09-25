@@ -517,4 +517,113 @@ router.get('/reset-admins', async (req, res) => {
     }
 });
 
+// テストデータを作成（開発用）
+router.get('/create-test-data', async (req, res) => {
+    try {
+        const db = database.getDb();
+        
+        // お問い合わせテストデータ
+        const contactsData = [
+            {
+                name: '田中太郎',
+                email: 'tanaka@example.com',
+                subject: '見学希望',
+                message: 'テニス部の見学をしたいです。初心者でも大丈夫でしょうか？',
+                status: 'unread'
+            },
+            {
+                name: '佐藤花子',
+                email: 'sato@example.com',
+                subject: '体験入部希望',
+                message: '体験入部をしてみたいです。いつ頃がよろしいでしょうか？',
+                status: 'read'
+            },
+            {
+                name: '山田次郎',
+                email: 'yamada@example.com',
+                subject: '質問',
+                message: '練習時間や頻度について教えてください。',
+                status: 'replied'
+            }
+        ];
+        
+        // お問い合わせデータを挿入
+        let contactsInserted = 0;
+        for (const contact of contactsData) {
+            try {
+                await new Promise((resolve, reject) => {
+                    const sql = `
+                        INSERT INTO contacts (name, email, subject, message, status, ip_address, user_agent)
+                        VALUES (?, ?, ?, ?, ?, '127.0.0.1', 'TestData')
+                    `;
+                    db.run(sql, [contact.name, contact.email, contact.subject, contact.message, contact.status], function(err) {
+                        if (err) reject(err);
+                        else resolve(this.lastID);
+                    });
+                });
+                contactsInserted++;
+            } catch (err) {
+                console.log('お問い合わせデータ挿入エラー:', err.message);
+            }
+        }
+        
+        // SNS投稿テストデータ
+        const snsData = [
+            {
+                platform: 'instagram',
+                author: '○○大学テニス部',
+                content: '今日は新入生歓迎会でした！🎾 たくさんの方に参加していただき、ありがとうございました！',
+                likes_count: 45,
+                comments_count: 12,
+                shares_count: 3
+            },
+            {
+                platform: 'twitter',
+                author: '○○大学テニス部',
+                content: '明日は練習試合です！頑張ります💪 #テニス #大学テニス',
+                likes_count: 28,
+                comments_count: 7,
+                shares_count: 15
+            }
+        ];
+        
+        // SNS投稿データを挿入
+        let snsInserted = 0;
+        for (const post of snsData) {
+            try {
+                await new Promise((resolve, reject) => {
+                    const sql = `
+                        INSERT INTO sns_posts (platform, author, content, likes_count, comments_count, shares_count)
+                        VALUES (?, ?, ?, ?, ?, ?)
+                    `;
+                    db.run(sql, [post.platform, post.author, post.content, post.likes_count, post.comments_count, post.shares_count], function(err) {
+                        if (err) reject(err);
+                        else resolve(this.lastID);
+                    });
+                });
+                snsInserted++;
+            } catch (err) {
+                console.log('SNS投稿データ挿入エラー:', err.message);
+            }
+        }
+
+        res.json({
+            success: true,
+            message: 'テストデータが作成されました',
+            data: {
+                contactsInserted,
+                snsInserted,
+                dashboardUrl: '/admin/dashboard'
+            }
+        });
+
+    } catch (error) {
+        console.error('テストデータ作成エラー:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
 module.exports = router;
