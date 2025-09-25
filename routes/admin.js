@@ -444,4 +444,46 @@ router.post('/force-create', async (req, res) => {
     }
 });
 
+// 簡単な管理者作成（GETリクエスト）
+router.get('/create-admin/:username/:password/:email', async (req, res) => {
+    try {
+        const { username, password, email } = req.params;
+        
+        const db = database.getDb();
+        
+        // パスワードハッシュ化
+        const saltRounds = 10;
+        const passwordHash = await bcrypt.hash(password, saltRounds);
+
+        // 管理者作成
+        const adminId = await new Promise((resolve, reject) => {
+            const sql = `
+                INSERT INTO admins (username, password_hash, email, role)
+                VALUES (?, ?, ?, 'admin')
+            `;
+            db.run(sql, [username, passwordHash, email], function(err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(this.lastID);
+                }
+            });
+        });
+
+        res.json({
+            success: true,
+            message: `管理者 '${username}' が作成されました`,
+            adminId: adminId,
+            loginUrl: '/admin/login'
+        });
+
+    } catch (error) {
+        console.error('管理者作成エラー:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
 module.exports = router;
