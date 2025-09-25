@@ -36,6 +36,7 @@ class Database {
                     status TEXT DEFAULT 'unread',
                     ip_address TEXT,
                     user_agent TEXT,
+                    read_at DATETIME,
                     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
                 )
@@ -127,8 +128,52 @@ class Database {
                         completed++;
                         if (completed === total) {
                             console.log('すべてのテーブルが作成されました');
-                            this.insertSampleData().then(resolve).catch(reject);
+                            this.migrateDatabase().then(() => {
+                                this.insertSampleData().then(resolve).catch(reject);
+                            }).catch(reject);
                         }
+                    }
+                });
+            });
+        });
+    }
+
+    async migrateDatabase() {
+        return new Promise((resolve, reject) => {
+            console.log('データベースマイグレーションを開始...');
+            
+            // read_atカラムが存在するかチェック
+            this.db.get("PRAGMA table_info(contacts)", [], (err, row) => {
+                if (err) {
+                    console.error('テーブル情報取得エラー:', err);
+                    reject(err);
+                    return;
+                }
+                
+                // すべてのカラム情報を取得
+                this.db.all("PRAGMA table_info(contacts)", [], (err, rows) => {
+                    if (err) {
+                        console.error('カラム情報取得エラー:', err);
+                        reject(err);
+                        return;
+                    }
+                    
+                    const hasReadAt = rows.some(column => column.name === 'read_at');
+                    
+                    if (!hasReadAt) {
+                        console.log('read_atカラムを追加中...');
+                        this.db.run("ALTER TABLE contacts ADD COLUMN read_at DATETIME", (err) => {
+                            if (err) {
+                                console.error('read_atカラム追加エラー:', err);
+                                reject(err);
+                            } else {
+                                console.log('read_atカラムが追加されました');
+                                resolve();
+                            }
+                        });
+                    } else {
+                        console.log('read_atカラムは既に存在します');
+                        resolve();
                     }
                 });
             });
