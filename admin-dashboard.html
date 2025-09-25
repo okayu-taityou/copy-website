@@ -188,12 +188,35 @@
 
     <script>
         // 認証チェック
-        const token = localStorage.getItem('adminToken');
-        if (!token) {
-            window.location.href = '/admin/login';
-        }
-
-        // ログアウト
+        function checkAuth() {
+            token = localStorage.getItem('adminToken');
+            console.log('保存されたトークン:', token);
+            if (!token) {
+                console.log('トークンがありません - ログインページにリダイレクト');
+                window.location.href = '/admin-login.html';
+                return false;
+            }
+            
+            // トークンの有効性をチェック
+            try {
+                const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+                const currentTime = Math.floor(Date.now() / 1000);
+                console.log('トークン有効期限:', new Date(tokenPayload.exp * 1000));
+                console.log('現在時刻:', new Date(currentTime * 1000));
+                
+                if (tokenPayload.exp < currentTime) {
+                    console.log('トークンが期限切れです');
+                    logout();
+                    return false;
+                }
+            } catch (error) {
+                console.error('トークン解析エラー:', error);
+                logout();
+                return false;
+            }
+            
+            return true;
+        }        // ログアウト
         function logout() {
             localStorage.removeItem('adminToken');
             window.location.href = '/admin/login';
@@ -203,18 +226,34 @@
         async function loadDashboardData() {
             try {
                 console.log('ダッシュボードデータを読み込み中...');
+                console.log('使用するトークン:', token ? token.substring(0, 20) + '...' : 'なし');
                 
                 const response = await fetch('/api/admin/dashboard', {
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
                     }
                 });
 
                 console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
                 
                 if (response.status === 401) {
-                    console.log('認証エラー - ログアウト');
-                    logout();
+                    console.log('認証エラー (401) - トークンを再取得して再試行');
+                    // トークンを削除して再ログインを促す
+                    localStorage.removeItem('adminToken');
+                    document.getElementById('contact-list').innerHTML = `
+                        <div class="error">
+                            認証の有効期限が切れました<br>
+                            <a href="/admin-login.html">再ログインしてください</a>
+                        </div>
+                    `;
+                    document.getElementById('sns-list').innerHTML = `
+                        <div class="error">
+                            認証の有効期限が切れました<br>
+                            <a href="/admin-login.html">再ログインしてください</a>
+                        </div>
+                    `;
                     return;
                 }
 
@@ -244,7 +283,7 @@
                             </div>
                         `).join('');
                     } else {
-                        contactList.innerHTML = '<div class="loading">お問い合わせはありません<br><a href="/api/admin/create-test-data" target="_blank">テストデータを作成</a></div>';
+                        contactList.innerHTML = '<div class="loading">お問い合わせはありません<br><a href="/api/admin/create-test-data" target="_blank" style="color: #00bcd4;">テストデータを作成</a></div>';
                     }
 
                     // SNS投稿一覧を更新
@@ -263,7 +302,7 @@
                             </div>
                         `).join('');
                     } else {
-                        snsList.innerHTML = '<div class="loading">SNS投稿はありません<br><a href="/api/admin/create-test-data" target="_blank">テストデータを作成</a></div>';
+                        snsList.innerHTML = '<div class="loading">SNS投稿はありません<br><a href="/api/admin/create-test-data" target="_blank" style="color: #00bcd4;">テストデータを作成</a></div>';
                     }
 
                 } else {
@@ -273,8 +312,9 @@
                 console.error('ダッシュボード読み込みエラー:', error);
                 const errorMessage = `<div class="error">データの読み込みに失敗しました<br>
                     エラー: ${error.message}<br>
-                    <a href="/api/admin/create-test-data" target="_blank">テストデータを作成</a><br>
-                    <a href="/api/admin/debug" target="_blank">デバッグ情報を確認</a>
+                    <a href="/api/admin/create-test-data" target="_blank" style="color: #00bcd4;">テストデータを作成</a><br>
+                    <a href="/api/admin/debug" target="_blank" style="color: #00bcd4;">デバッグ情報を確認</a><br>
+                    <a href="/admin-login.html" style="color: #ff5722;">再ログイン</a>
                 </div>`;
                 document.getElementById('contact-list').innerHTML = errorMessage;
                 document.getElementById('sns-list').innerHTML = errorMessage;
