@@ -6,6 +6,40 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Contact form found:', contactForm);
     
     if (contactForm) {
+        // 各入力フィールドにイベントリスナーを追加してリアルタイム監視
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const subjectInput = document.getElementById('subject');
+        const messageInput = document.getElementById('message');
+        
+        // 入力時の値を監視
+        nameInput.addEventListener('input', function() {
+            console.log('Name input changed:', this.value);
+        });
+        
+        emailInput.addEventListener('input', function() {
+            console.log('Email input changed:', this.value);
+        });
+        
+        subjectInput.addEventListener('change', function() {
+            console.log('Subject changed:', this.value);
+        });
+        
+        messageInput.addEventListener('input', function() {
+            console.log('Message input changed:', this.value);
+        });
+        
+        // フォーカス時の値も確認
+        [nameInput, emailInput, subjectInput, messageInput].forEach(input => {
+            input.addEventListener('focus', function() {
+                console.log(`Focus on ${this.name}: "${this.value}"`);
+            });
+            
+            input.addEventListener('blur', function() {
+                console.log(`Blur from ${this.name}: "${this.value}"`);
+            });
+        });
+        
         contactForm.addEventListener('submit', function(e) {
             console.log('=== FORM SUBMIT EVENT START ===');
             console.log('Event object:', e);
@@ -69,6 +103,26 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         console.log('Contact form not found');
     }
+    
+    // デバッグ用：グローバル関数を作成してブラウザコンソールからテスト可能にする
+    window.debugFormValues = function() {
+        console.log('=== MANUAL DEBUG CHECK ===');
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const subjectInput = document.getElementById('subject');
+        const messageInput = document.getElementById('message');
+        
+        console.log('Name input:', nameInput);
+        console.log('Name value:', nameInput ? nameInput.value : 'null');
+        console.log('Email input:', emailInput);
+        console.log('Email value:', emailInput ? emailInput.value : 'null');
+        console.log('Subject input:', subjectInput);
+        console.log('Subject value:', subjectInput ? subjectInput.value : 'null');
+        console.log('Message input:', messageInput);
+        console.log('Message value:', messageInput ? messageInput.value : 'null');
+    };
+    
+    console.log('デバッグ関数が利用可能です: window.debugFormValues() を実行してください');
     
     function validateForm(data) {
         console.log('Validating form data:', data);
