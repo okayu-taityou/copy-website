@@ -486,4 +486,35 @@ router.get('/create-admin/:username/:password/:email', async (req, res) => {
     }
 });
 
+// 管理者テーブルをリセット（開発用）
+router.get('/reset-admins', async (req, res) => {
+    try {
+        const db = database.getDb();
+        
+        // すべての管理者を削除
+        await new Promise((resolve, reject) => {
+            db.run('DELETE FROM admins', [], function(err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(this.changes);
+                }
+            });
+        });
+
+        res.json({
+            success: true,
+            message: 'すべての管理者アカウントが削除されました',
+            resetUrl: '/admin/setup'
+        });
+
+    } catch (error) {
+        console.error('管理者リセットエラー:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
 module.exports = router;
