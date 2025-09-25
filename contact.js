@@ -10,12 +10,30 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             console.log('Form submit triggered');
             
-            const formData = new FormData(e.target);
-            const formObj = {};
-            for (let [key, value] of formData.entries()) {
-                formObj[key] = value;
-                console.log(key + ': "' + value + '"');
-            }
+            // 要素を直接取得してデバッグ
+            const nameInput = document.getElementById('name');
+            const emailInput = document.getElementById('email');
+            const subjectInput = document.getElementById('subject');
+            const messageInput = document.getElementById('message');
+            
+            console.log('Name input element:', nameInput);
+            console.log('Email input element:', emailInput);
+            console.log('Subject input element:', subjectInput);
+            console.log('Message input element:', messageInput);
+            
+            // 値を直接取得
+            const formObj = {
+                name: nameInput ? nameInput.value : '',
+                email: emailInput ? emailInput.value : '',
+                subject: subjectInput ? subjectInput.value : '',
+                message: messageInput ? messageInput.value : ''
+            };
+            
+            console.log('Direct values:');
+            console.log('name: "' + formObj.name + '"');
+            console.log('email: "' + formObj.email + '"');
+            console.log('subject: "' + formObj.subject + '"');
+            console.log('message: "' + formObj.message + '"');
             
             console.log('Form data:', formObj);
             
